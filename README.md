@@ -1,6 +1,8 @@
-# fluttermasterdetaildemo
+# Flutter-Master-Detail-Demo
 
-just a master detail demo
+just a master-detail page demo
+
+//auto generated info below
 
 ## Getting Started
 
