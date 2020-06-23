@@ -44,3 +44,4 @@ app.*.map.json
 
 #protect my key, protect anybody
 /android/app/google-services.json
+/android/app/src/google-services.json
