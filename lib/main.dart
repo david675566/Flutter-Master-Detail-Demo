@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
 
 void main() {
@@ -44,12 +44,13 @@ class MasterPageState extends State<MasterPage> {
 
   Widget pageBuilder(){
     return FutureBuilder(
+      future: _getJsonFile(),
       builder: (context, snapshot){
-        if(snapshot.connectionState == ConnectionState.none && snapshot.hasData == null){
+        print(snapshot.hasData);
+        if(snapshot.connectionState == ConnectionState.none && (snapshot.hasData == null || !snapshot.hasData)) {
           return Container();
         }
-
-        return ListView.builder(
+          return ListView.builder(
             itemCount: snapshot.data.length,
             itemBuilder: (context, index){
               return ListTile(
@@ -72,9 +73,8 @@ class MasterPageState extends State<MasterPage> {
                 },
               );
             },
-        );
-      },
-      future: getJsonFile(),
+          );
+        },
     );
   }
 
@@ -88,9 +88,11 @@ class MasterPageState extends State<MasterPage> {
     );
   }
 
-  Future getJsonFile() async {
-     String data = await DefaultAssetBundle.of(context).loadString('assets/poems-cipai.json');
-     return jsonDecode(data);
+  Future<List<String>> _getJsonFile() async {
+    List<String> result;
+     var data = await rootBundle.loadString('assets/poems-cipai.json');
+     result.insert(0, data);
+     return result;
   }
 }
 
@@ -141,7 +143,7 @@ class DetailPage extends StatelessWidget {
             elevation: 10,
             child: Container(
               padding: EdgeInsets.all(20),
-              child: Text("Detail Page: ${item}")
+              child: Text("Detail Page: $item")
             ),
           ),
         ),
