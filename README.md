@@ -1,6 +1,6 @@
 # Flutter-Master-Detail-Demo
 
-//auto generated info below
+Master-Detail Demo in Flutter
 
 //auto generated info below
 ## Getting Started
