@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -37,8 +40,43 @@ class MasterPage extends StatefulWidget {
 }
 
 class MasterPageState extends State<MasterPage> {
-  final items = List<String>.generate(10000, (i) => "Item $i");
   String selectedItem;
+
+  Widget pageBuilder(){
+    return FutureBuilder(
+      builder: (context, snapshot){
+        if(snapshot.connectionState == ConnectionState.none && snapshot.hasData == null){
+          return Container();
+        }
+
+        return ListView.builder(
+            itemCount: snapshot.data.length,
+            itemBuilder: (context, index){
+              return ListTile(
+                selected: snapshot.data[index] == selectedItem,
+                title: Text(snapshot.data[index]),
+                onTap: (){
+                  setState(() {
+                    selectedItem = snapshot.data[index];
+
+                    while (Navigator.of(context).canPop()){
+                      Navigator.of(context).pop();
+                    }
+
+                    Navigator.of(context).push(
+                        DetailRoute(builder: (context){
+                          return DetailPage(item: selectedItem);
+                        })
+                    );
+                  });
+                },
+              );
+            },
+        );
+      },
+      future: getJsonFile(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,33 +84,13 @@ class MasterPageState extends State<MasterPage> {
       appBar: AppBar(
         title: Text("Master Detail Demo")
       ),
-
-      body: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index){
-            return ListTile(
-              selected: items[index] == selectedItem,
-              title: Text(items[index]),
-              onTap: (){
-                setState(() {
-                  selectedItem = items[index];
-
-                  while (Navigator.of(context).canPop()){
-                    Navigator.of(context).pop();
-                  }
-
-                  Navigator.of(context).push(
-                    DetailRoute(builder: (context){
-                      return DetailPage(item: selectedItem);
-                    })
-                  );
-
-                });
-              },
-            );
-          }
-      )
+      body: pageBuilder()
     );
+  }
+
+  Future getJsonFile() async {
+     String data = await DefaultAssetBundle.of(context).loadString('assets/poems-cipai.json');
+     return jsonDecode(data);
   }
 }
 
